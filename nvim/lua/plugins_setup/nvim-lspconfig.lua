@@ -88,7 +88,13 @@ lspconfig.clangd.setup({
 		"h",
 		"c.inc",
 	},
-	root_dir = lspconfig.util.root_pattern(".clangd", "Makefile", "compile_commands.json", "compile_flags.txt"),
+	root_dir = lspconfig.util.root_pattern(
+		".clangd",
+		"Makefile",
+		"compile_commands.json",
+		"compile_flags.txt",
+		".clang-format"
+	),
 })
 
 -- rust
@@ -139,9 +145,24 @@ lspconfig.cssls.setup({
 	},
 })
 
+-- go
+lspconfig.gopls.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    gopls = {
+      analyses = {
+        unusedparams = true,
+      },
+      staticcheck = true,
+      gofumpt = true,
+    },
+  },
+})
+
 -- linters
 local luacheck = require("efmls-configs.linters.luacheck")
--- local flake8 = require("efmls-configs.linters.flake8")
+local flake8 = require("efmls-configs.linters.flake8")
 local eslint = require("efmls-configs.linters.eslint")
 -- local cpplint = require("efmls-configs.linters.cpplint") -- clangd embeds clang-tidy
 -- formatters
@@ -160,7 +181,7 @@ lspconfig["efm"].setup({
 				stylua,
 			},
 			python = {
-				-- flake8,
+				flake8,
 				black,
 			},
 			javascript = {
