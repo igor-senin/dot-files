@@ -18,17 +18,24 @@ vim.api.nvim_create_autocmd({ "VimEnter" }, {
 -- end
 --
 
-local isNvimTreeEnabled = function()
-	return require("nvim-tree.view").is_visible()
-end
+-- local isNvimTreeEnabled = function()
+-- 	return require("nvim-tree.view").is_visible()
+-- end
 -- When NvimTree is the last window, quit nvim
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
+  nested = true,
 	desc = "Close vim if NvimTree is the last window",
 	group = nvimtree_augroup,
 	callback = function()
-		if vim.fn.winnr("$") == 1 and isNvimTreeEnabled() then
-			vim.cmd("quit")
-		end
+    local wins = vim.api.nvim_list_wins()
+    local buffers = vim.tbl_filter(function(buf)
+      return vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, "buflisted")
+    end, vim.api.nvim_list_bufs())
+
+    local curr_buf_name = vim.api.nvim_buf_get_name(0)
+    if #wins == 1 and #buffers == 1 and curr_buf_name:match("NvimTree_") then
+      vim.cmd("quit")
+    end
 	end,
 })
 
