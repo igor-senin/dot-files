@@ -7,7 +7,7 @@ require("mason-lspconfig").setup({
 		"efm",
 		"lua_ls",
 		"clangd",
-		"pyright",
+		-- "pyright",
 		"eslint",
 	},
 	automatic_installation = true,

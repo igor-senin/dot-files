@@ -55,14 +55,21 @@ lspconfig.lua_ls.setup({
 })
 
 -- python
-lspconfig.pyright.setup({
+lspconfig.pylsp.setup({
 	capabilities = capabilities,
 	on_attach = on_attach,
-	settings = {},
+	settings = {
+    plugins = {
+      jedi = { extra_paths = {
+        -- paths
+      },
+      }
+    },
+  },
 })
 
 -- C C++
-local clangd_cmd = { "clangd" }
+local clangd_cmd = { "clangd", "--background-index", "-j=8", "--header-insertion=never", "--fallback-style=none" }
 local hellos_path = "/home/igor/src/hellos-private"
 if starts_with(vim.fn.getcwd(), hellos_path) or vim.fn.getcwd() == hellos_path then
 	clangd_cmd = { hellos_path .. "/clangd_start.sh" }
@@ -83,15 +90,14 @@ lspconfig.clangd.setup({
 		"cuda",
 		"cu",
 		"cuh",
-		"proto",
 		"hpp",
 		"h",
 		"c.inc",
 	},
 	root_dir = lspconfig.util.root_pattern(
+		"compile_commands.json",
 		".clangd",
 		"Makefile",
-		"compile_commands.json",
 		"compile_flags.txt",
 		".clang-format"
 	),
@@ -162,12 +168,13 @@ lspconfig.gopls.setup({
 
 -- linters
 local luacheck = require("efmls-configs.linters.luacheck")
-local flake8 = require("efmls-configs.linters.flake8")
+-- local flake8 = require("efmls-configs.linters.flake8")
 local eslint = require("efmls-configs.linters.eslint")
 -- local cpplint = require("efmls-configs.linters.cpplint") -- clangd embeds clang-tidy
 -- formatters
 local stylua = require("efmls-configs.formatters.stylua")
-local black = require("efmls-configs.formatters.black")
+-- local black = require("efmls-configs.formatters.black")
+-- local yapf = require("efmls-configs.formatters.yapf")
 local prettier = require("efmls-configs.formatters.prettier")
 -- local clang_format = require("efmls-configs.formatters.clang_format") -- clangd embeds clang-format
 
@@ -181,8 +188,9 @@ lspconfig["efm"].setup({
 				stylua,
 			},
 			python = {
-				flake8,
-				black,
+				-- flake8,
+				-- black,
+        -- yapf,
 			},
 			javascript = {
 				eslint,
